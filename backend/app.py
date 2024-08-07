@@ -16,4 +16,6 @@ def get_guitars():
     resp = make_response(json.dumps(
         {"instruments": instruments, "specs": specs}), 200)
     resp.headers['Cache-Control'] = 'max-age=300'
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
     return resp
