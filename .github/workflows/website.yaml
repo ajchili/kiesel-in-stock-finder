@@ -15,7 +15,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Build
-        run: |
-          cd website
-          npm run build
+      - run: npm ci
+      - run: cd website && npm run build
