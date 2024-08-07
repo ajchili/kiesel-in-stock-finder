@@ -1,9 +1,9 @@
 {
   "name": "website",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "start": "vite"
+    "start": "vite",
+    "build": "vite build"
   },
   "author": "Kirin Patel <contaact@kirinpatel.com>",
   "license": "MIT",
