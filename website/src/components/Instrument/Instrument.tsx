@@ -10,17 +10,14 @@ export const Instrument = ({ instrument }: InstrumentProps) => {
   );
 
   return (
-    <div
-      key={instrument.id}
-      style={{ display: "flex", flexDirection: "column" }}
-    >
+    <div style={{ display: "flex", flexDirection: "column" }}>
       <p>
         {hasSold && <span style={{ background: "red" }}>SOLD</span>}{" "}
         {instrument.title}
       </p>
       <div>
         {instrument.images.map((image) => (
-          <img width="100px" src={image.node.url} />
+          <img key={image.node.url} width="100px" src={image.node.url} />
         ))}
       </div>
       <p>{instrument.variants[0].node.price.amount}</p>

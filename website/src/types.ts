@@ -20,4 +20,7 @@ export interface Instrument {
   updatedAt: string;
 }
 
-export type Specs = Record<string, string[]>;
+export type NumberSpec = { type: "number"; variants: number[] };
+export type StringSpec = { type: "string"; variants: string[] };
+export type Spec = NumberSpec | StringSpec;
+export type Specs = Record<string, Spec>;

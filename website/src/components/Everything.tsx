@@ -3,14 +3,18 @@ import { useEffect, useState } from "react";
 import type { Instrument as InstrumentType, Specs } from "../types";
 import { Instrument } from "./Instrument/Instrument";
 import { SpecFilter } from "./SpecFilter/SpecFilter";
+import { SpecFilterSection } from "./SpecFilter/SpecFilterSection";
 
 export const Everything = () => {
   const [instruments, setInstruments] = useState<InstrumentType[]>([]);
-  const [specs, setSpecs] = useState<Specs>({});
+  const [specs, setSpecs] = useState<Record<string, Specs>>({});
   const [searchText, setSearchText] = useState<string>(""); // TODO
   const [filters, setFilters] = useState<any>({});
 
+  console.log(filters);
+
   const onFilterChange = (filterName: string, filterValue: string) => {
+    console.log(filterName, filterValue);
     setFilters((prev: any) => ({
       ...prev,
       [filterName]: filterValue,
@@ -39,12 +43,13 @@ export const Everything = () => {
           overflowY: "scroll",
         }}
       >
-        {Object.entries(specs).map(([specName, variants]) => (
-          <SpecFilter
-            specName={specName}
-            variants={variants}
-            onChange={(value) => onFilterChange(specName, value)}
-            value={filters[specName]}
+        {Object.entries(specs).map(([category, specs]) => (
+          <SpecFilterSection
+            key={category}
+            name={category}
+            specs={specs}
+            filters={filters}
+            onFilterChange={onFilterChange}
           />
         ))}
       </div>
@@ -82,7 +87,7 @@ export const Everything = () => {
               return true;
             })
             .map((instrument) => (
-              <Instrument instrument={instrument} />
+              <Instrument key={instrument.id} instrument={instrument} />
             ))}
         </div>
       </div>
