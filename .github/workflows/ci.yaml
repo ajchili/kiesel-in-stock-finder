@@ -35,3 +35,4 @@ jobs:
           name: website-dist
           path: backend/dist
       - run: docker build . -t kiesel-in-stock-finder:latest
+        working-directory: ./backend
