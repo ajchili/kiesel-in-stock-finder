@@ -24,3 +24,4 @@ jobs:
         with:
           name: website-dist
           path: website/dist
+          retention-days: 1
