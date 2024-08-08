@@ -1,0 +1,17 @@
+---
+name: website
+on:
+  push:
+    branches:
+      - mainline
+  pull_request:
+    branches:
+      - mainline
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - run: docker build . -t kiesel-in-stock-finder:latest
+        working-directory: ./backend
