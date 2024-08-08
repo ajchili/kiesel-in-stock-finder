@@ -22,9 +22,8 @@ export const Everything = () => {
 
   useEffect(() => {
     (async () => {
-      const { VITE_BACKEND_ENDPOINT = window.location.hostname } =
-        // @ts-ignore
-        import.meta.env;
+      // @ts-ignore
+      const { VITE_BACKEND_ENDPOINT = window.location.host } = import.meta.env;
       const response = await fetch(
         `${window.location.protocol}//${VITE_BACKEND_ENDPOINT}/guitars`
       );
