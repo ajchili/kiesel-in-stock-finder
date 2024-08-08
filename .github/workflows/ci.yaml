@@ -34,5 +34,13 @@ jobs:
         with:
           name: website-dist
           path: backend/dist
-      - run: docker build . -t kiesel-in-stock-finder:latest
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: docker build . -t ajchili/kiesel-in-stock-finder:latest
         working-directory: ./backend
+      - uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ajchili/kiesel-in-stock-finder:latest
