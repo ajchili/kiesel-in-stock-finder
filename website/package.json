@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "vite",
-    "build": "vite build"
+    "copy-dist": "cp -r dist/* ../backend/dist",
+    "build": "vite build",
+    "start": "vite"
   },
   "author": "Kirin Patel <contaact@kirinpatel.com>",
   "license": "MIT",

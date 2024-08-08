@@ -1,4 +1,4 @@
-from flask import Flask, make_response
+from flask import Flask, make_response, send_from_directory
 import json
 from kiesel import get_in_stock_instruments
 
@@ -6,8 +6,10 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+@app.route("/<path:path>")
+def hello_world(path="index.html"):
+    print(path)
+    return send_from_directory('dist', path)
 
 
 @app.route("/guitars")
