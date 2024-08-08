@@ -20,4 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
+      - uses: actions/download-artifact@v4
+        with:
+          name: website-dist
+      - run: unzip website-dist.zip -d dist
       - run: docker build . -t kiesel-in-stock-finder:latest
