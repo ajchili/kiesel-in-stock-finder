@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import type { Specs } from "../../types";
-import { SpecFilter } from "./SpecFilter";
+import type { Specs } from "../../types.js";
+import { SpecFilter } from "./SpecFilter.js";
 
 interface SpecFilterSectionProps {
   name: string;

@@ -1,4 +1,4 @@
-import { NumberSpec, Spec } from "../../types";
+import { NumberSpec, Spec } from "../../types.js";
 
 interface SpecFilterProps {
   specName: string;
@@ -36,7 +36,7 @@ const NumberSpecFilter = ({
         step={100}
         min={min}
         max={max}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={(e) => onChange?.(Number(e.target.value))}
         value={value}
       />
     </div>

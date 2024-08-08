@@ -1,5 +1,8 @@
 {
   "extends": "@tsconfig/node20",
-  "compilerOptions": { "lib": ["DOM", "es2023"], "jsx": "react-jsx" },
+  "compilerOptions": {
+    "lib": ["DOM", "es2023"],
+    "jsx": "react-jsx"
+  },
   "include": ["src"]
 }

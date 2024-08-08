@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 
-import type { Instrument as InstrumentType, Specs } from "../types";
-import { Instrument } from "./Instrument/Instrument";
-import { SpecFilter } from "./SpecFilter/SpecFilter";
-import { SpecFilterSection } from "./SpecFilter/SpecFilterSection";
+import type { Instrument as InstrumentType, Specs } from "../types.js";
+import { Instrument } from "./Instrument/Instrument.js";
+import { SpecFilterSection } from "./SpecFilter/SpecFilterSection.js";
 
 export const Everything = () => {
   const [instruments, setInstruments] = useState<InstrumentType[]>([]);
@@ -23,7 +22,12 @@ export const Everything = () => {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch("http://127.0.0.1:5000/guitars");
+      const { VITE_BACKEND_ENDPOINT = window.location.hostname } =
+        // @ts-ignore
+        import.meta.env;
+      const response = await fetch(
+        `${window.location.protocol}//${VITE_BACKEND_ENDPOINT}/guitars`
+      );
       const { instruments, specs } = await response.json();
 
       setInstruments(instruments);

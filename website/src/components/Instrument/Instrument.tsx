@@ -1,4 +1,4 @@
-import type { Instrument as InstrumentType } from "../../types";
+import type { Instrument as InstrumentType } from "../../types.js";
 
 interface InstrumentProps {
   instrument: InstrumentType;
