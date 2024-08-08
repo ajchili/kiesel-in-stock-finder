@@ -8,7 +8,6 @@ app = Flask(__name__)
 @app.route("/")
 @app.route("/<path:path>")
 def hello_world(path="index.html"):
-    print(path)
     return send_from_directory('dist', path)
 
 
