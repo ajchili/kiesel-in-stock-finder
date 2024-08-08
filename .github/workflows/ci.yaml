@@ -33,5 +33,5 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: website-dist
-          path: dist
+          path: backend/dist
       - run: docker build . -t kiesel-in-stock-finder:latest
