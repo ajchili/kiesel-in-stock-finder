@@ -1,5 +1,5 @@
 ---
-name: website
+name: backend
 on:
   push:
     branches:
