@@ -1,12 +1,19 @@
 ---
 name: backend
 on:
+  workflow_run:
+    workflows: [website]
+    types:
+      - completed
   push:
     branches:
       - mainline
   pull_request:
     branches:
       - mainline
+defaults:
+  run:
+    working-directory: ./backend
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,4 +21,3 @@ jobs:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
       - run: docker build . -t kiesel-in-stock-finder:latest
-        working-directory: ./backend
