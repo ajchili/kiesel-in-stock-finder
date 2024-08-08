@@ -23,5 +23,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: website-dist
+          github-token: ${{ secrets.GH_PAT }}
+          repository: ajchili/kiesel-in-stock-finder
       - run: unzip website-dist.zip -d dist
       - run: docker build . -t kiesel-in-stock-finder:latest
