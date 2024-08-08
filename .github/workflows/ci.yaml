@@ -40,7 +40,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - run: docker build . -t ajchili/kiesel-in-stock-finder:latest
         working-directory: ./backend
-      - uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: ajchili/kiesel-in-stock-finder:latest
+      - run: docker push ajchili/kiesel-in-stock-finder:latest
