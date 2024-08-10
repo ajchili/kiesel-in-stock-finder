@@ -10,7 +10,7 @@ export interface Instrument {
       price: { amount: string };
       sku: string;
       availableForSale: boolean;
-      compareAtPrice: { amount: string };
+      compareAtPrice: { amount: string } | null;
     };
   }>;
   images: Array<{ node: { url: string; altText: string | null } }>;
