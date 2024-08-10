@@ -101,7 +101,18 @@ def get_in_stock_instruments():
     data = soup.find(id="__NEXT_DATA__")
     instrument_collection = json.loads(data.get_text())[
         "props"]["pageProps"]["instrumentCollection"]
-    in_stock_instruments = json.loads(instrument_collection)
+    raw_in_stock_instruments = json.loads(instrument_collection)
+
+    # Duplicate instruments may be listed by Kiesel guitars, filter them out
+    instrument_serial_numbers = set()
+    in_stock_instruments = list()
+    for instrument in raw_in_stock_instruments:
+        if instrument["specs"]["serialNumber"]["value"] in instrument_serial_numbers:
+            continue
+
+        instrument_serial_numbers.add(
+            instrument["specs"]["serialNumber"]["value"])
+        in_stock_instruments.append(instrument)
 
     specs_on_in_stock_instruments = {}
 
