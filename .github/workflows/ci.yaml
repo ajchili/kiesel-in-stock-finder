@@ -8,10 +8,6 @@ on:
     branches:
       - mainline
 jobs:
-  meta:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "COMMIT_HASH=$(git rev-parse --short=8 HEAD)" >> "$GITHUB_OUTPUT"
   build-website:
     runs-on: ubuntu-latest
     steps:
@@ -42,6 +38,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker build . -t ajchili/kiesel-in-stock-finder:latest -t ajchili/kiesel-in-stock-finder:{{ COMMIT_HASH }}
+      - id: commit-hash
+        run: echo "COMMIT_HASH=$(git rev-parse --short=8 HEAD)" >> "$GITHUB_OUTPUT"
+      - run: docker build . -t ajchili/kiesel-in-stock-finder:latest -t ajchili/kiesel-in-stock-finder:${{ steps.commit-hash.outputs.COMMIT_HASH }}
         working-directory: ./backend
       - run: docker push ajchili/kiesel-in-stock-finder
