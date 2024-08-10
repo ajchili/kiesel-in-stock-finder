@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - mainline
-  pull_request:
-    branches:
-      - mainline
 jobs:
   build-website:
     runs-on: ubuntu-latest
@@ -43,3 +40,22 @@ jobs:
       - run: docker build . -t ajchili/kiesel-in-stock-finder:latest -t ajchili/kiesel-in-stock-finder:${{ steps.commit-hash.outputs.COMMIT_HASH }}
         working-directory: ./backend
       - run: docker push ajchili/kiesel-in-stock-finder
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build-backend]
+    defaults:
+      run:
+        working-directory: ./packages/infrastructure
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - uses: pulumi/actions@v3
+        with:
+          command: up
+          stack-name: kiesel-in-stock-finder/prod
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
