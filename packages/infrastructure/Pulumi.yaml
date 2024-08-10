@@ -1,0 +1,3 @@
+name: kiesel-in-stock-finder
+runtime: nodejs
+description: Pulumi managed infrastructure for kiesel-in-stock-finder app
