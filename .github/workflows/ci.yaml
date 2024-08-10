@@ -53,9 +53,9 @@ jobs:
         with:
           node-version: 20
       - run: npm ci
-      - uses: pulumi/actions@v3
+      - uses: pulumi/actions@v5
         with:
           command: up
-          stack-name: kiesel-in-stock-finder/prod
+          stack-name: prod
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
