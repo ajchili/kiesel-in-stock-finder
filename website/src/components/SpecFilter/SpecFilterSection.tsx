@@ -20,9 +20,13 @@ export const SpecFilterSection = ({
 
   return (
     <div>
-      <p>{name}</p>
-      <button onClick={() => setOpened(!opened)}>
-        {opened ? "Show" : "Hide"}
+      <button
+        className={`w-full p-2 bg-gray-50 hover:bg-sky-100 border-sky-100 ${
+          opened && "border-r-4"
+        }`}
+        onClick={() => setOpened(!opened)}
+      >
+        {opened ? "Hide" : "Show"} {name} filters
       </button>
       <div style={{ display: opened ? "inherit" : "none" }}>
         {Object.entries(specs).map(([specName, spec]) => (

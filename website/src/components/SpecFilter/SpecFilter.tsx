@@ -50,7 +50,6 @@ export const SpecFilter = ({
   value,
 }: SpecFilterProps) => {
   if (spec.type === "number") {
-    console.log(specName, spec, value);
     return (
       <NumberSpecFilter
         spec={spec}
@@ -62,14 +61,7 @@ export const SpecFilter = ({
   }
 
   return (
-    <div
-      key={specName}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        margin: "0px 10px",
-      }}
-    >
+    <div className="flex justify-between">
       <label>{specName}</label>
       <select onChange={(e) => onChange?.(e.target.value)} value={value}>
         <option value="">Show All</option>
