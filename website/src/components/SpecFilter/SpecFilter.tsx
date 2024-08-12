@@ -63,7 +63,11 @@ export const SpecFilter = ({
   return (
     <div className="flex justify-between">
       <label>{specName}</label>
-      <select onChange={(e) => onChange?.(e.target.value)} value={value}>
+      <select
+        className="select"
+        onChange={(e) => onChange?.(e.target.value)}
+        value={value}
+      >
         <option value="">Show All</option>
         {spec.variants
           .filter((variant) => !!variant)

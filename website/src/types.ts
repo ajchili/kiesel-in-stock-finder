@@ -14,7 +14,7 @@ export interface Instrument {
     };
   }>;
   images: Array<{ node: { url: string; altText: string | null } }>;
-  specs: Record<string, any>;
+  specs: Record<string, { value: string | number }>;
   handle: string;
   createdAt: string;
   updatedAt: string;

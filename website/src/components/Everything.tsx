@@ -8,15 +8,26 @@ import { NavBar } from "./NavBar/NavBar.js";
 export const Everything = () => {
   const [instruments, setInstruments] = useState<InstrumentType[]>([]);
   const [specs, setSpecs] = useState<Record<string, Specs>>({});
-  const [searchText, setSearchText] = useState<string>(""); // TODO
-  const [filters, setFilters] = useState<Record<string, string | number>>({});
+  const [filters, setFilters] = useState<Record<string, Set<string | number>>>(
+    {}
+  );
   const [sortOrder, setSortOrder] = useState<string>();
 
-  const onFilterChange = (filterName: string, filterValue: string) => {
-    setFilters((prev: any) => ({
-      ...prev,
-      [filterName]: filterValue,
-    }));
+  const onFilterChange = (filterName: string, filterValue: string | number) => {
+    setFilters((prev) => {
+      const previousFilterValue = prev[filterName] || new Set();
+      previousFilterValue.add(filterValue);
+      return { ...prev, [filterName]: previousFilterValue };
+    });
+  };
+
+  const removeFilter = (filterName: string, filterValue: string | number) => {
+    setFilters((prev) => {
+      const previousFilterValue = prev[filterName] || new Set();
+      // @ts-ignore
+      previousFilterValue.delete(filterValue);
+      return { ...prev, [filterName]: previousFilterValue };
+    });
   };
 
   useEffect(() => {
@@ -36,11 +47,13 @@ export const Everything = () => {
   const visibleInstruments = useMemo(() => {
     return instruments
       .filter((instrument) => {
-        for (const [specName, value] of Object.entries(filters)) {
-          if (
-            !!value &&
+        for (const [specName, filterVariants] of Object.entries(filters)) {
+          if (filterVariants.size === 0) {
+            continue;
+          } else if (
+            !!filterVariants &&
             (!(specName in instrument.specs) ||
-              instrument.specs[specName].value !== value)
+              !filterVariants.has(instrument.specs[specName].value))
           ) {
             return false;
           }
@@ -72,34 +85,45 @@ export const Everything = () => {
   }, [instruments, filters, sortOrder]);
 
   return (
-    <>
+    <div className="flex flex-col h-dvh">
       <NavBar />
-      <div className="w-full h-dvh overflow-y-scroll">
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            overflowX: "hidden",
-            overflowY: "scroll",
-          }}
-        >
-          <div>
-            {Object.entries(filters).map(([filterName, value]) => (
-              <div>
-                <p>
-                  {filterName}: {value}
-                </p>
-                <button
-                  onClick={() => {
-                    const newFilters = { ...filters };
-                    delete newFilters[filterName];
-                    setFilters(newFilters);
-                  }}
+      <div className="flex flex-row max-sm:flex-col flex-1">
+        <div className="flex flex-col md:w-[20%] overflow-y-scroll p-4 gap-4">
+          <div className="p-2">
+            <div className="flex flex-col max-sm:flex-row justify-between">
+              <h3>Filters & Sorting</h3>
+              <label className="form-control">
+                <div className="label">
+                  <span className="label-text">Sort by</span>
+                </div>
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="select select-bordered"
                 >
-                  ❌
-                </button>
-              </div>
-            ))}
+                  <option value="date">List Date</option>
+                  <option value="title">Alphabetical</option>
+                  <option value="price-asc">Price ($ - $$$)</option>
+                  <option value="price-desc">Price ($$$ - $)</option>
+                </select>
+              </label>
+            </div>
+            <div className="flex flex-wrap">
+              {Object.entries(filters).map(([filterName, values]) => (
+                <>
+                  {Array.from(values).map((value) => (
+                    <button
+                      key={`${filterName}-value`}
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => removeFilter(filterName, value.toString())}
+                    >
+                      {filterName}: {value}
+                      <div className="badge badge-ghost">❌</div>
+                    </button>
+                  ))}
+                </>
+              ))}
+            </div>
           </div>
           {["general", "body", "neck", "electronics", "hardware", "other"]
             .filter((category) => category in specs)
@@ -110,27 +134,16 @@ export const Everything = () => {
                 specs={specs[category]}
                 filters={filters}
                 onFilterChange={onFilterChange}
+                removeFilter={removeFilter}
               />
             ))}
         </div>
-        <div className="flex w-full p-4 justify-between">
-          <span>Results: {visibleInstruments.length}</span>
-          <div className="flex">
-            <label>Sort by:</label>
-            <select onChange={(e) => setSortOrder(e.target.value)}>
-              <option value="date">List Date</option>
-              <option value="title">Alphabetical</option>
-              <option value="price-asc">Price ($ - $$$)</option>
-              <option value="price-desc">Price ($$$ - $)</option>
-            </select>
-          </div>
-        </div>
-        <div className="grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 items-center p-4 gap-4 overflow-y-scroll">
+        <div className="flex-1 grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 items-center p-4 gap-4 overflow-y-scroll">
           {visibleInstruments.map((instrument) => (
             <Instrument key={instrument.title} instrument={instrument} />
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };

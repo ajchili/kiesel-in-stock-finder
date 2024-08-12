@@ -17,37 +17,37 @@ export const Instrument = ({ instrument }: InstrumentProps) => {
   };
 
   return (
-    <div className="flex flex-col p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 h-min">
-      {instrument.images.length > 0 && (
-        <img
-          className="h-96 object-contain"
-          src={instrument.images[0].node.url}
-        />
-      )}
-      <span className="font-extrabold text-2xl pt-2">
-        {instrument.title.split("-")[0]}
-      </span>
-      <div className="flex gap-1 items-center pb-2">
-        <span className="font-light text-xl h-min">
-          {asCurrency(instrument.variants[0].node.price.amount)}
-        </span>
-        {instrument.variants[0].node.compareAtPrice && (
-          <span className="font-extralight text-l line-through h-min">
-            {asCurrency(instrument.variants[0].node.compareAtPrice.amount)}
-          </span>
+    <div className="card bg-base-100 shadow-xl">
+      <figure className="px-10 pt-10">
+        {instrument.images.length > 0 && (
+          <img
+            className="max-h-96 object-contain rounded"
+            src={instrument.images[0].node.url}
+          />
         )}
+      </figure>
+      <div className="card-body">
+        <h2 className="card-title">{instrument.title.split("-")[0]}</h2>
+        <p>
+          {asCurrency(instrument.variants[0].node.price.amount)}
+          {instrument.variants[0].node.compareAtPrice && (
+            <small className="line-through">
+              {asCurrency(instrument.variants[0].node.compareAtPrice.amount)}
+            </small>
+          )}
+        </p>
+        <div className="card-actions justify-end">
+          <a
+            className={`btn btn-outline ${
+              hasSold ? "btn-error" : "btn-primary"
+            }`}
+            href={`https://www.kieselguitars.com/in-stock/${instrument.handle}`}
+            target="_blank"
+          >
+            {hasSold ? "Sold" : "Buy"}
+          </a>
+        </div>
       </div>
-      <a
-        className={`w-full text-center text-xl border rounded-lg p-2 ${
-          hasSold
-            ? "bg-red-400 hover:bg-red-500"
-            : "bg-sky-400 hover:bg-sky-500"
-        }`}
-        href={`https://www.kieselguitars.com/in-stock/${instrument.handle}`}
-        target="_blank"
-      >
-        {hasSold ? "Sold" : "Buy"}
-      </a>
     </div>
   );
 };
