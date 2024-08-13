@@ -16,18 +16,20 @@ export const Instrument = ({ instrument }: InstrumentProps) => {
     });
   };
 
+  const title = instrument.title.slice(0, instrument.title.lastIndexOf("-"));
+
   return (
-    <div className="card bg-base-100 shadow-xl">
-      <figure className="px-10 pt-10">
+    <div className="card card-side bg-base-200 shadow-xl">
+      <figure className="flex-[4]">
         {instrument.images.length > 0 && (
           <img
-            className="max-h-96 object-contain rounded"
+            className="object-contain object-left"
             src={instrument.images[0].node.url}
           />
         )}
       </figure>
-      <div className="card-body">
-        <h2 className="card-title">{instrument.title.split("-")[0]}</h2>
+      <div className="card-body flex-[6]">
+        <h2 className="card-title">{title}</h2>
         <p>
           {asCurrency(instrument.variants[0].node.price.amount)}
           {instrument.variants[0].node.compareAtPrice && (

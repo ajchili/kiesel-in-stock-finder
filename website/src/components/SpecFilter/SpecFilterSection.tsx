@@ -1,7 +1,4 @@
-import { useState } from "react";
-
 import type { Specs } from "../../types.js";
-import { SpecFilter } from "./SpecFilter.js";
 
 interface SpecFilterSectionProps {
   name: string;
@@ -18,8 +15,6 @@ export const SpecFilterSection = ({
   onFilterChange,
   removeFilter,
 }: SpecFilterSectionProps) => {
-  const [opened, setOpened] = useState(false);
-
   return (
     <div className="drawer w-full">
       <input id={`${name}-drawer`} type="checkbox" className="drawer-toggle" />

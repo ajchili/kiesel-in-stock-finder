@@ -24,7 +24,6 @@ export const Everything = () => {
   const removeFilter = (filterName: string, filterValue: string | number) => {
     setFilters((prev) => {
       const previousFilterValue = prev[filterName] || new Set();
-      // @ts-ignore
       previousFilterValue.delete(filterValue);
       return { ...prev, [filterName]: previousFilterValue };
     });
@@ -85,10 +84,10 @@ export const Everything = () => {
   }, [instruments, filters, sortOrder]);
 
   return (
-    <div className="flex flex-col h-dvh">
+    <div className="flex flex-col">
       <NavBar />
       <div className="flex flex-row max-sm:flex-col flex-1">
-        <div className="flex flex-col md:w-[20%] overflow-y-scroll p-4 gap-4">
+        <div className="flex flex-col md:w-[25%] p-4 gap-4">
           <div className="p-2">
             <div className="flex flex-col max-sm:flex-row justify-between">
               <h3>Filters & Sorting</h3>
@@ -138,7 +137,7 @@ export const Everything = () => {
               />
             ))}
         </div>
-        <div className="flex-1 grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 items-center p-4 gap-4 overflow-y-scroll">
+        <div className="flex-1 grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 items-center p-4 gap-4">
           {visibleInstruments.map((instrument) => (
             <Instrument key={instrument.title} instrument={instrument} />
           ))}
