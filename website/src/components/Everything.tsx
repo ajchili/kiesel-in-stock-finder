@@ -1,31 +1,60 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { Instrument as InstrumentType, Specs } from "../types.js";
+import type { Instrument as InstrumentType } from "../types.js";
 import { Instrument } from "./Instrument/Instrument.js";
-import { SpecFilterSection } from "./SpecFilter/SpecFilterSection.js";
 import { NavBar } from "./NavBar/NavBar.js";
+import { SpecFilters } from "./SpecFilter/SpecFilters.js";
 
 export const Everything = () => {
   const [instruments, setInstruments] = useState<InstrumentType[]>([]);
-  const [specs, setSpecs] = useState<Record<string, Specs>>({});
-  const [filters, setFilters] = useState<Record<string, Set<string | number>>>(
-    {}
-  );
+  const [filters, setFilters] = useState<
+    Record<
+      string,
+      { category: string; values: Record<string, string | number> }
+    >
+  >({});
+  const [activeFilters, setActiveFilters] = useState<
+    Record<string, Record<string, Set<string>>>
+  >({});
   const [sortOrder, setSortOrder] = useState<string>();
 
-  const onFilterChange = (filterName: string, filterValue: string | number) => {
-    setFilters((prev) => {
-      const previousFilterValue = prev[filterName] || new Set();
+  const onActiveFilterChange = (
+    category: string,
+    filterName: string,
+    filterValue: string
+  ) => {
+    setActiveFilters((prev) => {
+      if (!prev[category]) {
+        prev[category] = {};
+      } else if (!prev[category][filterName]) {
+        prev[category][filterName] = new Set();
+      }
+
+      const previousFilterValue = prev[category][filterName] || new Set();
       previousFilterValue.add(filterValue);
-      return { ...prev, [filterName]: previousFilterValue };
+      return {
+        ...prev,
+        [category]: { ...prev[category], [filterName]: previousFilterValue },
+      };
     });
   };
 
-  const removeFilter = (filterName: string, filterValue: string | number) => {
-    setFilters((prev) => {
-      const previousFilterValue = prev[filterName] || new Set();
+  const removeFilter = (
+    category: string,
+    filterName: string,
+    filterValue: string
+  ) => {
+    setActiveFilters((prev) => {
+      if (!prev?.[category]?.[filterName]) {
+        return prev;
+      }
+
+      const previousFilterValue = prev[category][filterName] || new Set();
       previousFilterValue.delete(filterValue);
-      return { ...prev, [filterName]: previousFilterValue };
+      return {
+        ...prev,
+        [category]: { ...prev[category], [filterName]: previousFilterValue },
+      };
     });
   };
 
@@ -36,25 +65,41 @@ export const Everything = () => {
       const response = await fetch(
         `${window.location.protocol}//${VITE_BACKEND_ENDPOINT}/guitars`
       );
-      const { instruments, specs } = await response.json();
+      const { instruments } = await response.json();
 
       setInstruments(instruments);
-      setSpecs(specs);
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      // @ts-ignore
+      const { VITE_BACKEND_ENDPOINT = window.location.host } = import.meta.env;
+      const response = await fetch(
+        `${window.location.protocol}//${VITE_BACKEND_ENDPOINT}/api/v2/kiesel/filters`
+      );
+      const _filters: typeof filters = await response.json();
+
+      setFilters(_filters);
     })();
   }, []);
 
   const visibleInstruments = useMemo(() => {
     return instruments
       .filter((instrument) => {
-        for (const [specName, filterVariants] of Object.entries(filters)) {
-          if (filterVariants.size === 0) {
-            continue;
-          } else if (
-            !!filterVariants &&
-            (!(specName in instrument.specs) ||
-              !filterVariants.has(instrument.specs[specName].value))
-          ) {
-            return false;
+        console.log(instrument, activeFilters);
+        for (const activeFiltersInCategory of Object.values(activeFilters)) {
+          for (const [filterName, activeFilterValues] of Object.entries(
+            activeFiltersInCategory
+          )) {
+            if (activeFilterValues.size === 0) {
+              continue;
+            } else if (
+              !(filterName in instrument.specs) ||
+              !activeFilterValues.has(instrument.specs?.[filterName].value)
+            ) {
+              return false;
+            }
           }
         }
 
@@ -81,7 +126,7 @@ export const Everything = () => {
             );
         }
       });
-  }, [instruments, filters, sortOrder]);
+  }, [instruments, filters, sortOrder, activeFilters]);
 
   return (
     <div className="flex flex-col">
@@ -108,34 +153,38 @@ export const Everything = () => {
               </label>
             </div>
             <div className="flex flex-wrap">
-              {Object.entries(filters).map(([filterName, values]) => (
-                <>
-                  {Array.from(values).map((value) => (
-                    <button
-                      key={`${filterName}-value`}
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => removeFilter(filterName, value.toString())}
-                    >
-                      {filterName}: {value}
-                      <div className="badge badge-ghost">❌</div>
-                    </button>
-                  ))}
-                </>
-              ))}
+              {Object.entries(activeFilters).map(
+                ([filterCategory, activeFiltersInCategory]) => (
+                  <>
+                    {Object.entries(activeFiltersInCategory).map(
+                      ([filterName, values]) => (
+                        <>
+                          {Array.from(values).map((value) => (
+                            <button
+                              key={`${filterCategory}-${filterName}-${value}`}
+                              className="btn btn-ghost btn-sm"
+                              onClick={() =>
+                                removeFilter(filterCategory, filterName, value)
+                              }
+                            >
+                              {filterName}: {filters[filterName].values[value]}
+                              <div className="badge badge-ghost">❌</div>
+                            </button>
+                          ))}
+                        </>
+                      )
+                    )}
+                  </>
+                )
+              )}
             </div>
           </div>
-          {["general", "body", "neck", "electronics", "hardware", "other"]
-            .filter((category) => category in specs)
-            .map((category) => (
-              <SpecFilterSection
-                key={category}
-                name={category}
-                specs={specs[category]}
-                filters={filters}
-                onFilterChange={onFilterChange}
-                removeFilter={removeFilter}
-              />
-            ))}
+          <SpecFilters
+            filters={filters}
+            activeFilters={activeFilters}
+            onActiveFilterChange={onActiveFilterChange}
+            removeFilter={removeFilter}
+          />
         </div>
         <div className="flex-1 grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 items-center p-4 gap-4">
           {visibleInstruments.map((instrument) => (

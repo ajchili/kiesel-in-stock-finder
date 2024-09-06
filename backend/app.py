@@ -1,8 +1,10 @@
 from flask import Flask, make_response, send_from_directory
 import json
 from kiesel import get_in_stock_instruments
+from api.v2.kiesel import kiesel
 
 app = Flask(__name__)
+app.register_blueprint(kiesel)
 
 
 @app.route("/")
