@@ -35,9 +35,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker build . -t ajchili/kiesel-in-stock-finder:latest
+      - run: docker buildx create --use
+      - run: docker buildx build . -t ajchili/kiesel-in-stock-finder:latest --platform linux/amd64,linux/arm64 --push
         working-directory: ./backend
-      - run: docker push ajchili/kiesel-in-stock-finder:latest
 
   deploy:
     runs-on: ubuntu-latest
