@@ -1,6 +1,0 @@
-config:
-  digitalocean:spaces_access_id: DO00LZLRYVYLAB4BZJBT
-  digitalocean:spaces_secret_key:
-    secure: AAABAGVkq8BQ7eAafKR2do53u7A6gi+fi7LzgXiLc02yN0Ak6+zJWi4QgvRpcbDjvpfT1+v1C99rsuS13OHV1RM1HrIJS8Ogx89x
-  digitalocean:token:
-    secure: AAABAJoqOL4nfQS3NkpJNmHL6Pj6Zo7KOtu1SwHiB6HK0L96YZKWcxX6fJs5MaOzoOCR6tBae9iQxZ+f3f/RZas+H0Fl3UTnvSzW5C49KKKIDEty0Wdvtmg4QpfuldPn/hItkCH09w==
