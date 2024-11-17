@@ -1,8 +1,12 @@
 {
   "extends": "@tsconfig/node20",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
     "lib": ["DOM", "es2023"],
     "jsx": "react-jsx"
   },
-  "include": ["src"]
+  "include": ["src", "lib", "components"]
 }

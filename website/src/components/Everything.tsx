@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { Instrument as InstrumentType, Specs } from "../types.js";
 import { Instrument } from "./Instrument/Instrument.js";
-import { SpecFilterSection } from "./SpecFilter/SpecFilterSection.js";
-import { NavBar } from "./NavBar/NavBar.js";
 
 export const Everything = () => {
   const [instruments, setInstruments] = useState<InstrumentType[]>([]);
@@ -84,65 +82,10 @@ export const Everything = () => {
   }, [instruments, filters, sortOrder]);
 
   return (
-    <div className="flex flex-col">
-      <NavBar />
-      <div className="flex flex-row max-sm:flex-col flex-1">
-        <div className="flex flex-col md:w-[25%] p-4 gap-4">
-          <div className="p-2">
-            <div className="flex flex-col max-sm:flex-row justify-between">
-              <h3>Filters & Sorting</h3>
-              <label className="form-control">
-                <div className="label">
-                  <span className="label-text">Sort by</span>
-                </div>
-                <select
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
-                  className="select select-bordered"
-                >
-                  <option value="date">List Date</option>
-                  <option value="title">Alphabetical</option>
-                  <option value="price-asc">Price ($ - $$$)</option>
-                  <option value="price-desc">Price ($$$ - $)</option>
-                </select>
-              </label>
-            </div>
-            <div className="flex flex-wrap">
-              {Object.entries(filters).map(([filterName, values]) => (
-                <>
-                  {Array.from(values).map((value) => (
-                    <button
-                      key={`${filterName}-value`}
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => removeFilter(filterName, value.toString())}
-                    >
-                      {filterName}: {value}
-                      <div className="badge badge-ghost">❌</div>
-                    </button>
-                  ))}
-                </>
-              ))}
-            </div>
-          </div>
-          {["general", "body", "neck", "electronics", "hardware", "other"]
-            .filter((category) => category in specs)
-            .map((category) => (
-              <SpecFilterSection
-                key={category}
-                name={category}
-                specs={specs[category]}
-                filters={filters}
-                onFilterChange={onFilterChange}
-                removeFilter={removeFilter}
-              />
-            ))}
-        </div>
-        <div className="flex-1 grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 items-center p-4 gap-4">
-          {visibleInstruments.map((instrument) => (
-            <Instrument key={instrument.title} instrument={instrument} />
-          ))}
-        </div>
-      </div>
+    <div className="grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 items-center p-4 gap-4">
+      {visibleInstruments.map((instrument) => (
+        <Instrument key={instrument.title} instrument={instrument} />
+      ))}
     </div>
   );
 };
