@@ -117,10 +117,11 @@ def get_in_stock_instruments():
     specs_on_in_stock_instruments = {}
 
     for instrument in in_stock_instruments:
-        for spec in instrument["specs"]:
+        for spec, details in instrument.items():
             if spec in ["_ts"]:
                 continue
-            if "value" not in instrument["specs"][spec]:
+
+            if not isinstance(details, dict) or "value" not in details:
                 continue
 
             if spec not in specs_on_in_stock_instruments:
