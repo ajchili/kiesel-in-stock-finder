@@ -23,6 +23,7 @@ export const Instrument = ({ instrument }: InstrumentProps) => {
       <figure className="flex-[4]">
         {instrument.images.length > 0 && (
           <img
+            loading="lazy"
             className="object-contain object-left"
             src={instrument.images[0].node.url}
           />
