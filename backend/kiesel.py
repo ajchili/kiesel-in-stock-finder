@@ -117,7 +117,7 @@ def get_in_stock_instruments():
     specs_on_in_stock_instruments = {}
 
     for instrument in in_stock_instruments:
-        for spec, details in instrument.items():
+        for spec, details in instrument["specs"].items():
             if spec in ["_ts"]:
                 continue
 
@@ -127,8 +127,7 @@ def get_in_stock_instruments():
             if spec not in specs_on_in_stock_instruments:
                 specs_on_in_stock_instruments[spec] = set()
 
-            specs_on_in_stock_instruments[spec].add(
-                instrument["specs"][spec]["value"])
+            specs_on_in_stock_instruments[spec].add(details.get("value"))
 
     # poor mans JSON encoding for sets
     for spec in specs_on_in_stock_instruments:
