@@ -1,4 +1,5 @@
 import type { Instrument as InstrumentType } from "../../types.js";
+import { InstrumentDetailsModal } from "./DetailsModal.js";
 
 interface InstrumentProps {
   instrument: InstrumentType;
@@ -49,6 +50,7 @@ export const Instrument = ({ instrument }: InstrumentProps) => {
           >
             {hasSold ? "Sold" : "Buy"}
           </a>
+          <InstrumentDetailsModal instrument={instrument} />
         </div>
       </div>
     </div>
