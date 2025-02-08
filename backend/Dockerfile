@@ -1,11 +1,10 @@
-FROM python:3.12-alpine
+FROM python:3.10-alpine
 
-COPY *.py .
-COPY dist dist
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+ADD . /app
+WORKDIR /app
+RUN uv sync --frozen
 
 EXPOSE 80
 
-CMD ["flask", "--app", "app", "run", "--host=0.0.0.0", "--port=80"]
+CMD ["uv", "run", "flask", "--app", "app", "run", "--host=0.0.0.0", "--port=80"]
