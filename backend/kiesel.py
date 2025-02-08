@@ -131,7 +131,7 @@ def get_in_stock_instruments():
 
     # poor mans JSON encoding for sets
     for spec in specs_on_in_stock_instruments:
-        specs_on_in_stock_instruments[spec] = list(
-            specs_on_in_stock_instruments[spec])
+        specs_on_in_stock_instruments[spec] = sorted(list(
+            specs_on_in_stock_instruments[spec]))
 
     return in_stock_instruments, normalize_spec_filters(specs_on_in_stock_instruments)

@@ -1,4 +1,5 @@
 import type { Specs } from "../../types.js";
+import { SpecFilterSectionItem } from "./SpectFilterSectionItem.js";
 
 interface SpecFilterSectionProps {
   name: string;
@@ -40,24 +41,14 @@ export const SpecFilterSection = ({
               <div className="collapse-title text-xl font-medium">
                 {specName}
               </div>
-              <div className="collapse-content flex flex-wrap gap-2">
-                {spec.variants.filter(Boolean).map((variant) => (
-                  <button
-                    key={`${specName}-${variant}`}
-                    className={`btn btn-sm ${
-                      filters[specName]?.has(variant) && "btn-primary"
-                    }`}
-                    onClick={() => {
-                      if (filters[specName]?.has(variant)) {
-                        removeFilter?.(specName, variant.toString());
-                      } else {
-                        onFilterChange?.(specName, variant.toString());
-                      }
-                    }}
-                  >
-                    {variant}
-                  </button>
-                ))}
+              <div className="collapse-content">
+                <SpecFilterSectionItem
+                  specName={specName}
+                  spec={spec}
+                  filters={filters}
+                  onFilterChange={onFilterChange}
+                  removeFilter={removeFilter}
+                />
               </div>
             </div>
           ))}
