@@ -1,5 +1,6 @@
 import type { Instrument as InstrumentType } from "../../types.js";
 import { InstrumentDetailsModal } from "./DetailsModal.js";
+import { asCurrency } from "../../utils/currency.js";
 
 interface InstrumentProps {
   instrument: InstrumentType;
@@ -9,13 +10,6 @@ export const Instrument = ({ instrument }: InstrumentProps) => {
   const hasSold = instrument.variants.some(
     (variant) => variant.node.availableForSale === false
   );
-
-  const asCurrency = (num: string) => {
-    return Number(num).toLocaleString(undefined, {
-      style: "currency",
-      currency: "USD",
-    });
-  };
 
   const title = instrument.title.slice(0, instrument.title.lastIndexOf("-"));
 
