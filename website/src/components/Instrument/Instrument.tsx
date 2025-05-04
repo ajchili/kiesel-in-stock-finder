@@ -20,12 +20,12 @@ export const Instrument = ({ instrument }: InstrumentProps) => {
   const title = instrument.title.slice(0, instrument.title.lastIndexOf("-"));
 
   return (
-    <div className="card card-side bg-base-200 shadow-xl">
+    <div className="group card card-side bg-base-200 shadow-xl">
       <figure className="flex-[4]">
         {instrument.images.length > 0 && (
           <img
             loading="lazy"
-            className="object-contain object-left"
+            className="object-contain object-left group-hover:scale-105 transition-transform duration-100"
             src={instrument.images[0].node.url}
           />
         )}
