@@ -104,20 +104,18 @@ export const Everything = () => {
               </label>
             </div>
             <div className="flex flex-wrap">
-              {Object.entries(filters).map(([filterName, values]) => (
-                <>
-                  {Array.from(values).map((value) => (
-                    <button
-                      key={`${filterName}-value`}
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => removeFilter(filterName, value.toString())}
-                    >
-                      {filterName}: {value}
-                      <div className="badge badge-ghost">❌</div>
-                    </button>
-                  ))}
-                </>
-              ))}
+              {Object.entries(filters).flatMap(([filterName, values]) =>
+                Array.from(values).map((value) => (
+                  <button
+                    key={`${filterName}-${value}`}
+                    className="btn btn-ghost btn-sm"
+                    onClick={() => removeFilter(filterName, value.toString())}
+                  >
+                    {filterName}: {value}
+                    <div className="badge badge-ghost">❌</div>
+                  </button>
+                ))
+              )}
             </div>
           </div>
           {["general", "body", "neck", "electronics", "hardware", "other"]
