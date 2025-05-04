@@ -31,11 +31,7 @@ export const Everything = () => {
 
   useEffect(() => {
     (async () => {
-      // @ts-ignore
-      const { VITE_BACKEND_ENDPOINT = window.location.host } = import.meta.env;
-      const response = await fetch(
-        `${window.location.protocol}//${VITE_BACKEND_ENDPOINT}/guitars`
-      );
+      const response = await fetch("/api/guitars");
       const { instruments, specs } = await response.json();
 
       setInstruments(instruments);

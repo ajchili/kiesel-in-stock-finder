@@ -1,2 +1,2 @@
 run-backend:
-	cd backend && uv run flask --app app run
+	cd backend && uv run flask --app app run --host 0.0.0.0

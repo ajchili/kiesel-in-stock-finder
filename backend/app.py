@@ -11,7 +11,7 @@ def hello_world(path="index.html"):
     return send_from_directory('dist', path)
 
 
-@app.route("/guitars")
+@app.route("/api/guitars")
 def get_guitars():
     instruments, specs = get_in_stock_instruments()
     resp = make_response(json.dumps(
