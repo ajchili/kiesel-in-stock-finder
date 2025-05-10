@@ -53,9 +53,9 @@ export const Everything = () => {
           ? price
           : Math.min(price, salePrice);
 
-        if (minPrice > -1 && instrumentPrice < minPrice) {
+        if (minPrice > 0 && instrumentPrice < minPrice) {
           return false;
-        } else if (maxPrice > -1 && instrumentPrice > maxPrice) {
+        } else if (maxPrice > 0 && instrumentPrice > maxPrice) {
           return false;
         }
 
@@ -105,9 +105,6 @@ export const Everything = () => {
 
       return isNaN(salePrice) ? price : Math.min(price, salePrice);
     });
-
-    setMinPrice(Math.min(...prices));
-    setMaxPrice(Math.max(...prices));
 
     return prices;
   }, [instruments]);
