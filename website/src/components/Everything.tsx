@@ -13,8 +13,8 @@ export const Everything = () => {
     {}
   );
   const [sortOrder, setSortOrder] = useState<string>();
-  const [minPrice, setMinPrice] = useState<number>(-1);
-  const [maxPrice, setMaxPrice] = useState<number>(-1);
+  const [minPrice, setMinPrice] = useState<number>(0);
+  const [maxPrice, setMaxPrice] = useState<number>(0);
 
   const onFilterChange = (filterName: string, filterValue: string | number) => {
     setFilters((prev) => {
@@ -96,6 +96,17 @@ export const Everything = () => {
       });
   }, [instruments, filters, sortOrder, minPrice, maxPrice]);
 
+  const prices = useMemo(() => {
+    return instruments.map((instrument) => {
+      const price = Number(instrument.variants[0].node.price.amount);
+      const salePrice = Number(
+        instrument.variants[0].node.compareAtPrice?.amount
+      );
+
+      return isNaN(salePrice) ? price : Math.min(price, salePrice);
+    });
+  }, [instruments]);
+
   return (
     <div className="flex flex-col">
       <NavBar />
@@ -124,22 +135,10 @@ export const Everything = () => {
                   <span className="label-text">Price</span>
                 </div>
                 <PriceFilter
-                  prices={instruments.map((instrument) => {
-                    const price = Number(
-                      instrument.variants[0].node.price.amount
-                    );
-                    const salePrice = Number(
-                      instrument.variants[0].node.compareAtPrice?.amount
-                    );
-
-                    return isNaN(salePrice)
-                      ? price
-                      : Math.min(price, salePrice);
-                  })}
+                  prices={prices}
                   onFilterChange={(minPrice, maxPrice) => {
                     setMinPrice(minPrice);
                     setMaxPrice(maxPrice);
-                    console.log(minPrice, maxPrice);
                   }}
                 />
               </label>
