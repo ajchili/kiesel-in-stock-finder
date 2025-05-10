@@ -97,7 +97,7 @@ export const Everything = () => {
   }, [instruments, filters, sortOrder, minPrice, maxPrice]);
 
   const prices = useMemo(() => {
-    return instruments.map((instrument) => {
+    const prices = instruments.map((instrument) => {
       const price = Number(instrument.variants[0].node.price.amount);
       const salePrice = Number(
         instrument.variants[0].node.compareAtPrice?.amount
@@ -105,6 +105,11 @@ export const Everything = () => {
 
       return isNaN(salePrice) ? price : Math.min(price, salePrice);
     });
+
+    setMinPrice(Math.min(...prices));
+    setMaxPrice(Math.max(...prices));
+
+    return prices;
   }, [instruments]);
 
   return (

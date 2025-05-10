@@ -1,15 +1,38 @@
-import { createRef, useCallback, useEffect, useMemo, useState } from "react";
+import { createRef, useCallback, useEffect, useState } from "react";
 
 import { asCurrency } from "../../utils/currency.js";
+import { useBinnedPriceRange } from "../../hooks/usePriceRangeFilter.js";
+
+const clamp = (value: number, min: number, max: number) => {
+  return Math.max(min, Math.min(value, max));
+};
+
+const calculatePriceBinRange = (
+  priceRangeSlider: HTMLDivElement,
+  selectedRangeSlider: HTMLDivElement,
+  numberOfBins: number
+): [number, number] => {
+  const sliderWidth = priceRangeSlider.clientWidth;
+  const { left, right } = selectedRangeSlider.style;
+
+  const relativeBinSize = 1 / numberOfBins;
+  const leftBinIndex = Math.floor(
+    parseFloat(left.substring(0, left.length - 2)) /
+      sliderWidth /
+      relativeBinSize
+  );
+  const rightBinIndex = Math.floor(
+    (1 - parseFloat(right.substring(0, right.length - 2)) / sliderWidth) /
+      relativeBinSize
+  );
+
+  return [leftBinIndex, clamp(rightBinIndex, 0, numberOfBins - 1)];
+};
 
 interface PriceFilterProps {
   prices: number[];
   onFilterChange?: (min: number, max: number) => void;
 }
-
-const clamp = (value: number, min: number, max: number) => {
-  return Math.max(min, Math.min(value, max));
-};
 
 export const PriceFilter = (props: PriceFilterProps) => {
   const priceRangeSliderRef = createRef<HTMLDivElement>();
@@ -17,57 +40,24 @@ export const PriceFilter = (props: PriceFilterProps) => {
   const leftRangeSliderButtonRef = createRef<HTMLButtonElement>();
   const rightRangeSliderButtonRef = createRef<HTMLButtonElement>();
 
+  const [leftBinIndex, setLeftBinIndex] = useState(0);
+  const [rightBinIndex, setRightBinIndex] = useState(0);
   const [leftRangeSliderSelected, setLeftRangeSlideSelected] = useState(false);
   const [rightRangeSliderSelected, setRightRangeSlideSelected] =
     useState(false);
 
-  const { minPrice, maxPrice, averagePriceDifference, priceBins } =
-    useMemo(() => {
-      const sortedPrices = props.prices.sort((a, b) => a - b);
-      const minPrice = sortedPrices[0];
-      const maxPrice = sortedPrices[sortedPrices.length - 1];
+  const {
+    minPrice,
+    maxPrice,
+    averagePriceDifference,
+    priceBins,
+    largestBinSize,
+  } = useBinnedPriceRange(props.prices);
 
-      const cumulativeDifferenceBetweenPrices = sortedPrices.reduce(
-        (acc, price, index) => {
-          if (index === 0) {
-            return acc;
-          }
-
-          return acc + (price - sortedPrices[index - 1]);
-        },
-        0
-      );
-      const averagePriceDifference = Math.floor(
-        cumulativeDifferenceBetweenPrices / (sortedPrices.length - 1)
-      );
-
-      const numberOfPriceBins = Math.min(
-        Math.floor((maxPrice - minPrice) / averagePriceDifference),
-        10
-      );
-
-      const priceBins: number[][] = Array.from(
-        { length: numberOfPriceBins },
-        () => []
-      );
-      for (const price of sortedPrices) {
-        const binIndex = Math.floor(
-          (price - minPrice) / averagePriceDifference
-        );
-        if (binIndex >= 0 && binIndex < priceBins.length) {
-          priceBins[binIndex].push(price);
-        } else if (binIndex > priceBins.length) {
-          priceBins.push([price]);
-        }
-      }
-
-      return {
-        minPrice,
-        maxPrice,
-        averagePriceDifference,
-        priceBins,
-      };
-    }, [props.prices]);
+  useEffect(() => {
+    setLeftBinIndex(0);
+    setRightBinIndex(priceBins.length - 1);
+  }, [priceBins])
 
   const onMove = useCallback(
     (event: MouseEvent) => {
@@ -125,18 +115,17 @@ export const PriceFilter = (props: PriceFilterProps) => {
       return;
     }
 
-    const sliderWidth = priceRangeSliderRef.current.clientWidth;
-    const { left, right } = selectedPriceRangeSliderRef.current.style;
-
-    const leftBinIndex = Math.floor(
-      parseFloat(left.substring(0, left.length - 2)) / sliderWidth / 0.1
+    const [leftBinIndex, rightBinIndex] = calculatePriceBinRange(
+      priceRangeSliderRef.current,
+      selectedPriceRangeSliderRef.current,
+      priceBins.length
     );
+
     const leftBin = priceBins[leftBinIndex];
+    const rightBin = priceBins[rightBinIndex];
 
-    const rightBinIndex = Math.floor(
-      (1 - parseFloat(right.substring(0, right.length - 2)) / sliderWidth) / 0.1
-    );
-    const rightBin = priceBins[clamp(rightBinIndex, 0, priceBins.length - 1)];
+    setLeftBinIndex(leftBinIndex);
+    setRightBinIndex(rightBinIndex);
 
     props.onFilterChange?.(leftBin[0], rightBin[rightBin.length - 1]);
   }, [
@@ -161,20 +150,21 @@ export const PriceFilter = (props: PriceFilterProps) => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-2">
-        {priceBins.map((priceBin, index) => (
-          <div key={index} className="group flex-1 h-12 flex items-end">
-            <div
-              className="flex-1 bg-neutral-content group-hover:bg-primary"
-              style={{
-                height: `${
-                  (priceBin.length /
-                    Math.max(...priceBins.map((i) => i.length))) *
-                  100
-                }%`,
-              }}
-            />
-          </div>
-        ))}
+        {priceBins.map((priceBin, index) => {
+          const indexSelected = index >= leftBinIndex && index <= rightBinIndex;
+          return (
+            <div key={index} className="group flex-1 h-12 flex items-end">
+              <div
+                className={`flex-1 ${
+                  indexSelected ? "bg-neutral-content" : "bg-neutral"
+                }`}
+                style={{
+                  height: `${(priceBin.length / largestBinSize) * 100}%`,
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
       <div ref={priceRangeSliderRef} className="flex-1 relative pb-1">
         <div className="absolute top-1 w-full h-2 bg-neutral rounded" />
@@ -196,8 +186,12 @@ export const PriceFilter = (props: PriceFilterProps) => {
         ></button>
       </div>
       <div className="flex flex-row justify-between">
-        <p>{asCurrency(minPrice)}</p>
-        <p>{asCurrency(maxPrice)}</p>
+        <p>{asCurrency(priceBins[leftBinIndex]?.[0])}</p>
+        <p>
+          {asCurrency(
+            priceBins[rightBinIndex]?.[priceBins[rightBinIndex]?.length - 1]
+          )}
+        </p>
       </div>
     </div>
   );
