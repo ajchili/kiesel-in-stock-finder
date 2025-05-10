@@ -35,23 +35,28 @@ export const SpecFilterSection = ({
         ></label>
         <div className="menu bg-base-200 text-base-content min-h-full w-80">
           {/* Sidebar content here */}
-          {Object.entries(specs).map(([specName, spec]) => (
-            <div key={specName} className="collapse collapse-arrow bg-base-200">
-              <input type="checkbox" />
-              <div className="collapse-title text-xl font-medium">
-                {specName}
+          {Object.entries(specs)
+            .filter(([specName]) => specName !== "price")
+            .map(([specName, spec]) => (
+              <div
+                key={specName}
+                className="collapse collapse-arrow bg-base-200"
+              >
+                <input type="checkbox" />
+                <div className="collapse-title text-xl font-medium">
+                  {specName}
+                </div>
+                <div className="collapse-content">
+                  <SpecFilterSectionItem
+                    specName={specName}
+                    spec={spec}
+                    filters={filters}
+                    onFilterChange={onFilterChange}
+                    removeFilter={removeFilter}
+                  />
+                </div>
               </div>
-              <div className="collapse-content">
-                <SpecFilterSectionItem
-                  specName={specName}
-                  spec={spec}
-                  filters={filters}
-                  onFilterChange={onFilterChange}
-                  removeFilter={removeFilter}
-                />
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </div>
