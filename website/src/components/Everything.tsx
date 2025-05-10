@@ -4,6 +4,7 @@ import type { Instrument as InstrumentType, Specs } from "../types.js";
 import { Instrument } from "./Instrument/Instrument.js";
 import { SpecFilterSection } from "./SpecFilter/SpecFilterSection.js";
 import { NavBar } from "./NavBar/NavBar.js";
+import { PriceFilter } from "./filters/PriceFilter.js";
 
 export const Everything = () => {
   const [instruments, setInstruments] = useState<InstrumentType[]>([]);
@@ -12,6 +13,8 @@ export const Everything = () => {
     {}
   );
   const [sortOrder, setSortOrder] = useState<string>();
+  const [minPrice, setMinPrice] = useState<number>(0);
+  const [maxPrice, setMaxPrice] = useState<number>(0);
 
   const onFilterChange = (filterName: string, filterValue: string | number) => {
     setFilters((prev) => {
@@ -42,6 +45,20 @@ export const Everything = () => {
   const visibleInstruments = useMemo(() => {
     return instruments
       .filter((instrument) => {
+        const price = Number(instrument.variants[0].node.price.amount);
+        const salePrice = Number(
+          instrument.variants[0].node.compareAtPrice?.amount
+        );
+        const instrumentPrice = isNaN(salePrice)
+          ? price
+          : Math.min(price, salePrice);
+
+        if (minPrice > 0 && instrumentPrice < minPrice) {
+          return false;
+        } else if (maxPrice > 0 && instrumentPrice > maxPrice) {
+          return false;
+        }
+
         for (const [specName, filterVariants] of Object.entries(filters)) {
           if (filterVariants.size === 0) {
             continue;
@@ -77,7 +94,20 @@ export const Everything = () => {
             );
         }
       });
-  }, [instruments, filters, sortOrder]);
+  }, [instruments, filters, sortOrder, minPrice, maxPrice]);
+
+  const prices = useMemo(() => {
+    const prices = instruments.map((instrument) => {
+      const price = Number(instrument.variants[0].node.price.amount);
+      const salePrice = Number(
+        instrument.variants[0].node.compareAtPrice?.amount
+      );
+
+      return isNaN(salePrice) ? price : Math.min(price, salePrice);
+    });
+
+    return prices;
+  }, [instruments]);
 
   return (
     <div className="flex flex-col">
@@ -101,6 +131,18 @@ export const Everything = () => {
                   <option value="price-asc">Price ($ - $$$)</option>
                   <option value="price-desc">Price ($$$ - $)</option>
                 </select>
+              </label>
+              <label className="form-control">
+                <div className="label">
+                  <span className="label-text">Price</span>
+                </div>
+                <PriceFilter
+                  prices={prices}
+                  onFilterChange={(minPrice, maxPrice) => {
+                    setMinPrice(minPrice);
+                    setMaxPrice(maxPrice);
+                  }}
+                />
               </label>
             </div>
             <div className="flex flex-wrap">
